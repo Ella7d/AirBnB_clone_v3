@@ -1,14 +1,16 @@
 #!/usr/bin/python3
-"""This module defines a class to manage file storage for hbnb clone"""
+"""
+Contains the FileStorage class
+"""
+
 import json
-from models.base_model import BaseModel
-from models.user import User
-from models.state import State
-from models.city import City
 from models.amenity import Amenity
+from models.base_model import BaseModel
+from models.city import City
 from models.place import Place
 from models.review import Review
-
+from models.state import State
+from models.user import User
 
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
@@ -53,7 +55,7 @@ class FileStorage:
                 jo = json.load(f)
             for key in jo:
                 self.__objects[key] = classes[jo[key]["__class__"]](**jo[key])
-        except:
+        except Exception:
             pass
 
     def delete(self, obj=None):
@@ -68,19 +70,16 @@ class FileStorage:
         self.reload()
 
     def get(self, cls, id):
-        """
-        Returns the object
-        """
-        obj = self.__session.query(cls).get(id)
-        if obj is None:
-            return None
-        return obj
+        """ Retrieves on object """
+        objects = list(self.all(cls).values())
+        for object in objects:
+            if object.id == id:
+                return (object)
 
     def count(self, cls=None):
-        """
-        count the number of objects in storage
-        """
-        objs = self.all(cls)
-        return (len(objs))
-
-        return count
+        """ Counts the number of objects in storage """
+        objects = self.all(cls)
+        number = 0
+        for object in objects:
+            number += 1
+        return (number)
