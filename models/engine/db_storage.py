@@ -11,6 +11,9 @@ from models.place import Place
 from models.review import Review
 from sqlalchemy.orm import sessionmaker, scoped_session
 
+classes = {"Amenity": Amenity, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}
+
 
 class DBStorage():
     """Class for database storage"""
@@ -19,15 +22,18 @@ class DBStorage():
     all_classes = ["State", "City", "User", "Place", "Review"]
 
     def __init__(self):
-        """Initializes storage"""
-        self.__engine = create_engine(
-            'mysql+mysqldb://{}:{}@{}:3306/{}'
-            .format(getenv("HBNB_MYSQL_USER"),
-                    getenv("HBNB_MYSQL_PWD"),
-                    getenv("HBNB_MYSQL_HOST"),
-                    getenv("HBNB_MYSQL_DB")),
-            pool_pre_ping=True)
-        if getenv('HBNB_ENV') == 'test':
+         """Instantiate a DBStorage object"""
+        HBNB_MYSQL_USER = getenv('HBNB_MYSQL_USER')
+        HBNB_MYSQL_PWD = getenv('HBNB_MYSQL_PWD')
+        HBNB_MYSQL_HOST = getenv('HBNB_MYSQL_HOST')
+        HBNB_MYSQL_DB = getenv('HBNB_MYSQL_DB')
+        HBNB_ENV = getenv('HBNB_ENV')
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
+                                      format(HBNB_MYSQL_USER,
+                                             HBNB_MYSQL_PWD,
+                                             HBNB_MYSQL_HOST,
+                                             HBNB_MYSQL_DB))
+        if HBNB_ENV == "test":
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
@@ -68,3 +74,14 @@ class DBStorage():
     def close(self):
         """Close session"""
         self.__session.close()
+         def get(self, cls, id):
+        """ Retrieves one object """
+        objects = list(self.all(cls).values())
+        for object in objects:
+            if object.id == id:
+                return (object)
+
+    def count(self, cls=None):
+        """ Counts the number of objects in storage """
+        objects = list(self.all(cls).values())
+        return(len(objects))
