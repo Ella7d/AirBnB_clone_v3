@@ -6,7 +6,7 @@ from models import storage
 from models.user import User
 
 
-@app_views.route('/user',
+@app_views.route('/users',
                  strict_slashes=False,
                  methods=['GET', 'POST'])
 def view_users():
@@ -48,7 +48,7 @@ def view_users():
         return jsonify(list)
 
 
-@app_views.route('/user/<id>',
+@app_views.route('/users/<id>',
                  strict_slashes=False,
                  methods=['GET', 'DELETE', 'PUT'])
 def view_user_id(id):
